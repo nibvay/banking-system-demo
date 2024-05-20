@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  express-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    depends_on:
+      - mysqldb
+    environment:
+      - DB_HOST=mysqldb
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME}
+      - DB_USERNAME=root
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - banking-system-for-interview
+
+  mysqldb:
+    image: mysql:8
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - banking-system-for-interview
+
+volumes:
+  mysql-data:
+networks:
+  banking-system-for-interview:
+    name: banking-system-for-interview
