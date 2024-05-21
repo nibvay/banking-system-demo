@@ -35,6 +35,10 @@ const TransactionLog = {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  info: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 };
 
 export default TransactionLog;

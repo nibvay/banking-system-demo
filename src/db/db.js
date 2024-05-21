@@ -1,5 +1,3 @@
-import { Op } from "sequelize";
-
 import { db } from "../db/connection.js";
 import { CustomError } from "../middleware/errorHandler.js";
 
@@ -16,8 +14,8 @@ async function deposit({ name, amount }) {
   } = db;
 
   await sequelize.transaction(async (t) => {
-    const account = await Account.findByPk(name, { transaction: t });
-    if (!account) throw new CustomError({ status: 400, message: "Invalid account name" });
+    const account = await Account.findByPk(name, { lock: true, transaction: t });
+    if (!account) throw new CustomError({ status: 404, message: "Account not found" });
 
     await Account.update(
       { balance: account.balance + amount },
@@ -38,8 +36,8 @@ async function withdraw({ name, amount }) {
   } = db;
 
   await sequelize.transaction(async (t) => {
-    const account = await Account.findByPk(name, { transaction: t });
-    if (!account) throw new CustomError({ status: 400, message: "Invalid account name" });
+    const account = await Account.findByPk(name, { lock: true, transaction: t });
+    if (!account) throw new CustomError({ status: 404, message: "Account not found" });
     if (account.balance < amount) throw new CustomError({ status: 400, message: "Insufficient balance" });
 
     await Account.update(
@@ -60,44 +58,55 @@ async function transfer({ fromName, toName, amount }) {
     models: { Account },
   } = db;
 
-  await sequelize.transaction(async (t) => {
-    const fromAccount = await Account.findByPk(fromName, { transaction: t });
-    const toAccount = await Account.findByPk(toName, { transaction: t });
-    if (!fromAccount || !toAccount) throw new CustomError({ status: 400, message: "Invalid account" });
-    if (fromAccount.balance < amount) {
-      throw new CustomError({ status: 400, code: 0, message: "Insufficient balance from source account" });
-    }
+  try {
+    await sequelize.transaction(async (t) => {
+      const fromAccount = await Account.findByPk(fromName, { lock: true, transaction: t });
+      const toAccount = await Account.findByPk(toName, { lock: true, transaction: t });
 
-    await Account.update(
-      { balance: fromAccount.balance - amount },
-      {
-        where: { name: fromAccount.name },
-        transaction: t,
+      if (!fromAccount || !toAccount) throw new CustomError({ status: 404, message: "Account not found" });
+      if (fromAccount.balance < amount) {
+        throw new CustomError({ status: 400, code: 0, message: "Insufficient balance from source account" });
       }
-    );
-    await Account.update(
-      { balance: toAccount.balance + amount },
-      {
-        where: { name: toAccount.name },
-        transaction: t,
-      }
-    );
-  });
+      await Account.update(
+        { balance: fromAccount.balance - amount },
+        {
+          where: { name: fromAccount.name },
+          transaction: t,
+        }
+      );
+      await Account.update(
+        { balance: toAccount.balance + amount },
+        {
+          where: { name: toAccount.name },
+          transaction: t,
+        }
+      );
+      await createLog(
+        { type: "transfer", source: fromName, destination: toName, amount, result: "success" },
+        { transaction: t }
+      );
+    });
+  } catch (e) {
+    throw e;
+  }
 
-  const [fromAccount, toAccount] = await Account.findAll({
-    where: {
-      name: {
-        [Op.or]: [fromName, toName],
-      },
-    },
-  });
-  return { from: fromAccount.toJSON(), to: toAccount.toJSON() };
+  return true;
 }
 
-async function createLog({ type, source, destination, amount, result }) {
+async function createLog({ type, source, destination, amount, result, info }, options) {
   const { TransactionLog } = db.models;
-  const newLog = await TransactionLog.create({ type, source, destination, amount, result });
+  let newLog;
+  if (options) {
+    newLog = await TransactionLog.create({ type, source, destination, amount, result, info }, options);
+  } else {
+    newLog = await TransactionLog.create({ type, source, destination, amount, result, info });
+  }
   return newLog.toJSON();
 }
 
-export { createAccount, deposit, withdraw, transfer, createLog };
+async function findAccountByName(name) {
+  const { Account } = db.models;
+  return (await Account.findByPk(name)).toJSON();
+}
+
+export { createAccount, deposit, withdraw, transfer, createLog, findAccountByName };

@@ -11,10 +11,10 @@ export class CustomError extends Error {
 }
 
 function errorHandler(error, req, res, next) {
-  // console.log("[errorHandler]", error);
   if (error instanceof CustomError) {
     return res.status(error.status || 500).json({
       message: error.message || "Internal server error",
+      ...(typeof error.code === "number" && { code: error.code }),
     });
   }
 

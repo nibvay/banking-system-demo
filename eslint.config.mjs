@@ -5,6 +5,7 @@ export default [
   pluginJs.configs.recommended,
   {
     languageOptions: { globals: globals.node },
+    env: { jest: true },
     rules: {
       "max-len": [
         "error",

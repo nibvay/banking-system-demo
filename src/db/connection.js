@@ -22,7 +22,7 @@ const db = {}; // TODO: add db class
 //     await conn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
 //     console.log(`Init database: ${dbName}`);
 
-//     const sequelize = new Sequelize(dbName, user, password, { host, port, dialect: "mysql" });
+//     const sequelize = new Sequelize(dbName, user, password, { host, port, dialect: "mysql", logging: false });
 //     await sequelize.authenticate();
 //     console.log("Connected to the database!!");
 
@@ -43,7 +43,12 @@ async function dbConnection() {
     await conn.query(`CREATE DATABASE IF NOT EXISTS \`${initDb}\`;`);
     console.log(`Init database: ${initDb}`);
 
-    const sequelize = new Sequelize(initDb, "root", "123", { host: "localhost", port, dialect: "mysql" });
+    const sequelize = new Sequelize(initDb, "root", "123", {
+      host: "localhost",
+      port,
+      dialect: "mysql",
+      logging: false,
+    });
     await sequelize.authenticate();
     console.log("Connected to the database!!");
 
