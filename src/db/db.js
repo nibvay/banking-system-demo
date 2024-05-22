@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { db } from "../db/connection.js";
 import { CustomError } from "../middleware/errorHandler.js";
 
@@ -109,4 +110,22 @@ async function findAccountByName(name) {
   return (await Account.findByPk(name)).toJSON();
 }
 
-export { createAccount, deposit, withdraw, transfer, createLog, findAccountByName };
+async function findTransferLogByName(name) {
+  const { TransactionLog } = db.models;
+  const result = await TransactionLog.findAll({
+    where: {
+      type: "transfer",
+      [Op.or]: [
+        {
+          source: name,
+        },
+        {
+          destination: name,
+        },
+      ],
+    },
+  });
+  return result;
+}
+
+export { createAccount, deposit, withdraw, transfer, createLog, findAccountByName, findTransferLogByName };

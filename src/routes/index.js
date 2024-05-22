@@ -1,6 +1,14 @@
 import { Router } from "express";
 import { CustomError } from "../middleware/errorHandler.js";
-import { createAccount, deposit, withdraw, transfer, createLog, findAccountByName } from "../db/db.js";
+import {
+  createAccount,
+  deposit,
+  withdraw,
+  transfer,
+  createLog,
+  findAccountByName,
+  findTransferLogByName,
+} from "../db/db.js";
 
 const router = Router();
 
@@ -58,6 +66,17 @@ router.post("/transfer", async (req, res, next) => {
         result: "failed",
       });
     }
+    next(e);
+  }
+});
+
+router.get("/logs/:account/transfer", async (req, res, next) => {
+  try {
+    const { account } = req.params;
+    if (!account) throw new CustomError({ status: 400, message: "Account is invalid" });
+    const result = await findTransferLogByName(account);
+    res.status(200).json(result);
+  } catch (e) {
     next(e);
   }
 });

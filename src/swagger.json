@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Banking System API",
+    "description": "API for interview",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000/api",
+      "description": "local server"
+    }
+  ],
+  "paths": {
+    "/account": {
+      "post": {
+        "summary": "Create a new account",
+        "description": "Creates a new account with a specified name and balance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "balance": {
+                    "type": "number",
+                    "example": 0
+                  }
+                },
+                "required": ["name", "balance"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deposit": {
+      "post": {
+        "summary": "Deposit amount to an account",
+        "description": "Deposits a specified amount into an account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 100
+                  }
+                },
+                "required": ["name", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deposit successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/withdraw": {
+      "post": {
+        "summary": "Withdraw amount from an account",
+        "description": "Withdraw a specified amount from an account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 100
+                  }
+                },
+                "required": ["name", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Withdraw successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transfer": {
+      "post": {
+        "summary": "Transfer amount to an account",
+        "description": "Transfer amount from source account to destination account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fromName": {
+                    "type": "string",
+                    "example": "John"
+                  },
+                  "toName": {
+                    "type": "string",
+                    "example": "Mary"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 100
+                  }
+                },
+                "required": ["fromName", "toName", "amount"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transfer successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "from": {
+                      "$ref": "#/components/schemas/Account"
+                    },
+                    "to": {
+                      "$ref": "#/components/schemas/Account"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs/{account}/transfer": {
+      "get": {
+        "summary": "Get transfer logs",
+        "description": "Get transfer logs by account name",
+        "parameters": [{
+          "name": "account",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "example": "John"
+          }
+        }],
+        "responses": {
+          "200": {
+            "description": "Transfer successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionLog"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Account": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John"
+          },
+          "balance": {
+            "type": "number",
+            "example": 100
+          },
+          "updatedAt": {
+            "type": "date",
+            "example": "2024-05-21T13:49:05.863Z"
+          },
+          "createdAt": {
+            "type": "date",
+            "example": "2024-05-21T13:49:05.863Z"
+          }
+        }
+      },
+      "TransactionLog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "type": {
+            "type": "string",
+            "example": "transfer"
+          },
+          "destination": {
+            "type": "string",
+            "example": "John"
+          },
+          "source": {
+            "type": "string",
+            "example": "Mary"
+          },
+          "amount": {
+            "type": "float",
+            "example": 2000
+          },
+          "result": {
+            "type": "string",
+            "example": "success"
+          },
+          "info": {
+            "type": "string",
+            "example": "..."
+          },
+          "updatedAt": {
+            "type": "date",
+            "example": "2024-05-21T13:49:05.863Z"
+          },
+          "createdAt": {
+            "type": "date",
+            "example": "2024-05-21T13:49:05.863Z"
+          }
+        }
+      }
+    }
+  }
+}

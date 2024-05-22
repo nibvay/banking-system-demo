@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon",
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest"
+    "dev": "EXEC_ENV=local nodemon",
+    "test": "EXEC_ENV=test NODE_OPTIONS=--experimental-vm-modules npx jest"
   },
   "jest": {
     "testEnvironment": "node",
@@ -24,7 +24,8 @@
     "mysql": "^2.18.1",
     "mysql2": "^3.9.7",
     "nodemon": "^3.1.0",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.2.0",

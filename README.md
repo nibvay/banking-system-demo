@@ -1,24 +1,24 @@
 # Banking System for Interview
 
-```txt
+## How to start the project?
 
-Q2：Design a simple banking system with these features: (Typescript or Javascript
- or Golang)
-
-- Implement System by restful API
-- Account balance cannot be negative
-- Create an account with name and balance
-- Able to deposit money to an account
-- Able to withdraw money from an account
-- Able to transfer money from one account to another account
-- Generate transaction logs for each account transfer(when, how much, to what
-account)
-- Support atomic transaction
-- Include unit tests & integration test
-- provide a docker container run server
-P.S. Do not worry about persisting the data, you can save everything in-memory
-
+```bash
+$ git clone xxx
+$ npm install
+$ docker compose up
 ```
+
+## How to run test?
+
+```bash
+# run database(mysql:8) by docker image
+$ docker run --name banking-system-interview-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123 -d mysql:8
+
+# run test
+$ npm run test
+```
+
+## Detail about the project
 
 ### API
 
@@ -40,16 +40,6 @@ response: { from: account, to: account }
 
 ### Data Schema
 
-Account
+```
 
-- name (pk)
-- balance
-
-TransactionLog
-
-- id
-- type
-- destination (fk)
-- source (fk)
-- amount
-- result
+```

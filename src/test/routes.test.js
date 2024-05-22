@@ -1,6 +1,7 @@
 import request from "supertest";
 import app from "../app";
 import { createAccount, findAccountByName } from "../db/db";
+import { db } from "../db/connection";
 
 const BASE_URL = "/api";
 
@@ -86,12 +87,6 @@ describe("Basic test for API", () => {
       expect(res.body.message).toBe("Insufficient balance from source account");
     });
   });
-
-  // afterAll((done) => {
-  //   // Closing the DB connection and app allows Jest to exit successfully.
-  //   // https://stackoverflow.com/questions/53935108/jest-did-not-exit-one-second-after-the-test-run-has-completed-using-express
-  //   done();
-  // });
 });
 
 describe("Banking System integration test", () => {
@@ -132,4 +127,9 @@ describe("Banking System integration test", () => {
     expect((await findAccountByName("Justin")).balance).toBe(initBalance - 10 * times);
     expect((await findAccountByName("Wendy")).balance).toBe(initBalance + 10 * times);
   });
+});
+
+afterAll(async () => {
+  await db.sequelize.drop();
+  await db.sequelize.close();
 });

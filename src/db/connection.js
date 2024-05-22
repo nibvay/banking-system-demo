@@ -3,7 +3,27 @@ import Sequelize from "sequelize";
 
 import createModels from "../models/index.js";
 
-const { DB_HOST: host, DB_PORT: port, DB_USERNAME: user, DB_PASSWORD: password, DB_NAME: dbName } = process.env;
+const { EXEC_ENV = null } = process.env;
+
+let dbConfig;
+if (EXEC_ENV === "test" || EXEC_ENV === "local") {
+  dbConfig = {
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "123",
+    dbName: "test-banking-system-db",
+  };
+} else {
+  const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = process.env;
+  dbConfig = {
+    host: DB_HOST,
+    port: DB_PORT,
+    user: DB_USERNAME,
+    password: DB_PASSWORD,
+    dbName: DB_NAME,
+  };
+}
 
 let init = false;
 const db = {}; // TODO: add db class
@@ -33,21 +53,24 @@ const db = {}; // TODO: add db class
 //   }
 // }
 
-// for local development
 async function dbConnection() {
   try {
     init = true;
-    let initDb = "my-banking-test";
     console.log("Try to connect the database......");
-    const conn = await mysql.createConnection({ host: "localhost", port, user: "root", password: "123" });
-    await conn.query(`CREATE DATABASE IF NOT EXISTS \`${initDb}\`;`);
-    console.log(`Init database: ${initDb}`);
+    const conn = await mysql.createConnection({
+      host: dbConfig.host,
+      port: dbConfig.port,
+      user: dbConfig.user,
+      password: dbConfig.password,
+    });
+    await conn.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.dbName}\`;`);
+    console.log(`Init database: ${dbConfig.dbName}`);
 
-    const sequelize = new Sequelize(initDb, "root", "123", {
-      host: "localhost",
-      port,
+    const sequelize = new Sequelize(dbConfig.dbName, dbConfig.user, dbConfig.password, {
+      host: dbConfig.host,
+      port: dbConfig.port,
       dialect: "mysql",
-      logging: false,
+      logging: EXEC_ENV === "test" || EXEC_ENV === "local",
     });
     await sequelize.authenticate();
     console.log("Connected to the database!!");
