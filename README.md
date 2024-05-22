@@ -3,7 +3,7 @@
 ## How to start the project ?
 
 ```bash
-$ git clone xxxxxx
+$ git clone https://github.com/nibvay/banking-system-demo.git
 $ npm install
 $ docker compose up
 # server is running on http://localhost:4000
