@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  express-app:
+  express_server:
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,7 +15,7 @@ services:
       - DB_USERNAME=root
       - DB_PASSWORD=${DB_PASSWORD}
     networks:
-      - banking-system-for-interview
+      - banking-system-for-demo
 
   mysqldb:
     image: mysql:8
@@ -27,10 +27,10 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-      - banking-system-for-interview
+      - banking-system-for-demo
 
 volumes:
   mysql-data:
 networks:
-  banking-system-for-interview:
-    name: banking-system-for-interview
+  banking-system-for-demo:
+    name: banking-system-for-demo

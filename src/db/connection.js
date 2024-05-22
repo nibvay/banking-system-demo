@@ -26,32 +26,7 @@ if (EXEC_ENV === "test" || EXEC_ENV === "local") {
 }
 
 let init = false;
-const db = {}; // TODO: add db class
-
-// const sequelize = new Sequelize("", "root", "123", {
-//   host: "localhost",
-//   port: "3306",
-//   dialect: "mysql",
-// });
-
-// async function dbConnection() {
-//   try {
-//     init = true;
-//     console.log("Try to connect the database......");
-//     const conn = await mysql.createConnection({ host, port, user, password });
-//     await conn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-//     console.log(`Init database: ${dbName}`);
-
-//     const sequelize = new Sequelize(dbName, user, password, { host, port, dialect: "mysql", logging: false });
-//     await sequelize.authenticate();
-//     console.log("Connected to the database!!");
-
-//     db.sequelize = sequelize;
-//   } catch (error) {
-//     console.error("Unable to connect to the database:", error.message);
-//     process.exit(1);
-//   }
-// }
+const db = {};
 
 async function dbConnection() {
   try {
@@ -86,7 +61,7 @@ if (!init) {
   await dbConnection();
   db.models = {};
   createModels(db);
-  await db.sequelize.sync({ force: true });
+  await db.sequelize.sync({ force: true }); // This creates the table, dropping it first if it already existed
   console.log("All models were synchronized successfully.");
 }
 
